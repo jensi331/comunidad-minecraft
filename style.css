@@ -200,4 +200,58 @@ input {
 .card-whatsapp:hover {
     background: #25D366 !important;
     color: white !important;
+
+}
+
+/* --- SCROLL PARA EL TEXTO DE LAS TARJETAS --- */
+.card p, .card-item p {
+    max-height: 80px; /* Limita la altura del texto */
+    overflow-y: auto; /* Activa el scroll si el texto es largo */
+    padding-right: 5px;
+    font-size: 0.9rem;
+}
+
+/* Personalización de la barra de scroll (Estilo Madera/Minecraft) */
+.card p::-webkit-scrollbar, 
+.card-item p::-webkit-scrollbar,
+.modal-content p::-webkit-scrollbar {
+    width: 6px;
+}
+
+.card p::-webkit-scrollbar-thumb,
+.card-item p::-webkit-scrollbar-thumb {
+    background: var(--mc-dirt);
+    border-radius: 10px;
+}
+
+/* --- LA "X" LINDA PARA EL MODAL --- */
+.close-btn {
+    position: absolute;
+    top: -15px;
+    right: -15px;
+    width: 35px;
+    height: 35px;
+    background-color: #e74c3c; /* Rojo Minecraft */
+    color: white;
+    border: 3px solid #333;
+    border-radius: 5px; /* Un poco cuadrada para que parezca botón de juego */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 20px;
+    box-shadow: 0 4px 0 #c0392b; /* Efecto 3D */
+    transition: 0.1s;
+    z-index: 10;
+}
+
+.close-btn:hover {
+    transform: scale(1.1);
+    filter: brightness(1.2);
+}
+
+.close-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #c0392b;
 }
