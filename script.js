@@ -1,11 +1,10 @@
 // ==========================================
-// 0. SEGURIDAD Y REDIRECCIÓN (PRIMERO QUE NADA)
+// 0. SEGURIDAD Y REDIRECCIÓN
 // ==========================================
 (function gestionarSeguridad() {
     const path = window.location.pathname;
     const sesionActiva = localStorage.getItem('mc_session_active');
 
-    // Identificamos las páginas
     const esLogin = path.endsWith('/index.html') || path.endsWith('/comunidad-minecraft/') || path.endsWith('/comunidad-minecraft');
     const esPaginaProtegida = path.includes('home.html') || 
                               path.includes('addons.html') || 
@@ -13,12 +12,10 @@
                               path.includes('shaders.html') ||
                               path.includes('admin.html');
 
-    // Si ya tiene sesión y entra al login -> Mandarlo al Home
     if (esLogin && sesionActiva === 'true') {
         window.location.replace("home.html");
     }
 
-    // Si NO tiene sesión e intenta entrar a páginas privadas -> Expulsarlo al Login
     if (esPaginaProtegida && sesionActiva !== 'true') {
         window.location.replace("index.html");
     }
@@ -32,10 +29,9 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ==========================================
-// 2. LÓGICA DEL BOTÓN DE CLIMA
+// 2. LÓGICA DEL CLIMA
 // ==========================================
 const btnTheme = document.getElementById('theme-toggle');
-
 function aplicarClima(tema) {
     if (tema === 'dark') {
         document.body.setAttribute('data-theme', 'dark');
@@ -47,7 +43,6 @@ function aplicarClima(tema) {
         localStorage.setItem('pref-clima', 'light');
     }
 }
-
 if (btnTheme) {
     btnTheme.addEventListener('click', () => {
         const esNoche = document.body.hasAttribute('data-theme');
@@ -56,7 +51,7 @@ if (btnTheme) {
 }
 
 // ==========================================
-// 3. LÓGICA DE AUTENTICACIÓN
+// 3. AUTENTICACIÓN
 // ==========================================
 const loginForm = document.getElementById('login-form');
 if (loginForm) {
@@ -64,60 +59,31 @@ if (loginForm) {
         e.preventDefault();
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
-        const { data, error } = await supabaseClient.auth.signInWithPassword({
-            email: email,
-            password: password,
-        });
-
-        if (error) {
-            alert("¡Error de acceso!: " + error.message);
-        } else {
+        if (error) alert("¡Error de acceso!: " + error.message);
+        else {
             localStorage.setItem('mc_session_active', 'true');
-            alert("¡Conexión establecida! Entrando al mundo...");
             window.location.replace("home.html");
         }
     });
 }
 
-async function registrarUsuario(e) {
-    e.preventDefault();
-    const email = document.getElementById('reg-email').value;
-    const password = document.getElementById('reg-password').value;
-
-    if (!email || !password) {
-        alert("Por favor rellena todos los campos");
-        return;
-    }
-
-    const { data, error } = await supabaseClient.auth.signUp({
-        email: email,
-        password: password,
-    });
-
-    if (error) {
-        alert("Error al registrar: " + error.message);
-    } else {
-        alert("✅ Registro enviado. Revisa tu correo.");
-        window.location.replace("index.html"); 
-    }
-}
-
 // ==========================================
-// 4. CIERRE DE SESIÓN (MODIFICADO)
+// 4. CIERRE DE SESIÓN
 // ==========================================
 const logoutBtn = document.getElementById('btn-logout');
 if (logoutBtn) {
     logoutBtn.addEventListener('click', async () => {
         await supabaseClient.auth.signOut();
-        localStorage.removeItem('mc_session_active'); // Borramos la marca
-        localStorage.clear(); // Limpieza total
+        localStorage.removeItem('mc_session_active');
+        localStorage.clear();
         window.location.replace("index.html");
     });
 }
 
 // ==========================================
-// 5. FUNCIONES MODAL Y RECURSOS
+// 5. FUNCIONES MODAL Y CARGA
 // ==========================================
 function abrirDetalle(nombre, desc, img, link) {
     const modal = document.getElementById('modal-recurso');
@@ -135,57 +101,78 @@ function cerrarDetalle() {
     if (modal) modal.style.display = 'none';
 }
 
-window.onclick = function(event) {
-    const modal = document.getElementById('modal-recurso');
-    if (event.target == modal) { modal.style.display = "none"; }
-}
-
-async function verificarAdmin() {
-    supabaseClient.auth.onAuthStateChange((event, session) => {
-        const user = session?.user;
-        const ADMIN_EMAIL = "fabianjensi@gmail.com";
-        if (user && user.email === ADMIN_EMAIL) {
-            const adminCard = document.getElementById('admin-card');
-            if (adminCard) adminCard.style.display = "block";
-        }
-    });
-}
-
 async function cargarRecursos(cat) {
-    const { data: recursos, error } = await supabaseClient
-        .from('recursos')
-        .select('*')
-        .eq('categoria', cat);
-
+    const { data: recursos } = await supabaseClient.from('recursos').select('*').eq('categoria', cat);
     const grid = document.getElementById(`grid-${cat}`);
     if (!grid) return;
     grid.innerHTML = ""; 
-
-    if (recursos && recursos.length === 0) {
-        grid.innerHTML = "<p>No hay contenido disponible todavía.</p>";
+    if (!recursos || recursos.length === 0) {
+        grid.innerHTML = "<p>No hay contenido disponible.</p>";
         return;
     }
-
     recursos.forEach(item => {
         const div = document.createElement('div');
         div.className = 'card-item';
         div.onclick = () => abrirDetalle(item.nombre, item.descripcion, item.imagen, item.descarga);
-        div.innerHTML = `
-            <img src="${item.imagen}" alt="${item.nombre}">
-            <h3>${item.nombre}</h3>
-            <p>Ver detalles</p>
-        `;
+        div.innerHTML = `<img src="${item.imagen}"><h3>${item.nombre}</h3><p>Ver detalles</p>`;
         grid.appendChild(div);
     });
 }
 
 // ==========================================
-// 6. PANEL MASTER
+// 6. PANEL MASTER (EL ARREGLO ESTÁ AQUÍ)
 // ==========================================
 async function subirRecurso() {
     const nombre = document.getElementById('nombre').value;
+    const descripcion = document.getElementById('descripcion').value;
     const descarga = document.getElementById('descarga').value;
-    // ... resto de tu lógica de subida (se mantiene igual)
+    const categoria = document.getElementById('categoria').value;
+    const archivoImg = document.getElementById('archivo-imagen').files[0];
+    const urlExterna = document.getElementById('imagen-url').value;
+
+    if (!nombre || !descarga) {
+        alert("¡El nombre y el link de descarga son obligatorios!");
+        return;
+    }
+
+    let urlFinalImagen = urlExterna || "https://via.placeholder.com/300x150";
+
+    // Si hay un archivo seleccionado, subirlo a Storage
+    if (archivoImg) {
+        const fileName = `${Date.now()}_${archivoImg.name}`;
+        const { data, error } = await supabaseClient.storage
+            .from('imagenes-recursos')
+            .upload(fileName, archivoImg);
+
+        if (error) {
+            alert("Error al subir imagen: " + error.message);
+            return;
+        }
+
+        const { data: publicUrlData } = supabaseClient.storage
+            .from('imagenes-recursos')
+            .getPublicUrl(fileName);
+        
+        urlFinalImagen = publicUrlData.publicUrl;
+    }
+
+    // Insertar en la base de datos
+    const { error: dbError } = await supabaseClient
+        .from('recursos')
+        .insert([{
+            nombre: nombre,
+            descripcion: descripcion,
+            imagen: urlFinalImagen,
+            descarga: descarga,
+            categoria: categoria
+        }]);
+
+    if (dbError) {
+        alert("Error en la base de datos: " + dbError.message);
+    } else {
+        alert("✅ ¡Recurso publicado con éxito!");
+        window.location.href = "home.html";
+    }
 }
 
 async function cargarListaGestion() {
@@ -196,25 +183,31 @@ async function cargarListaGestion() {
     if(recursos) {
         recursos.forEach(item => {
             const itemDiv = document.createElement('div');
-            itemDiv.className = "admin-item-row";
-            itemDiv.style = "border-bottom: 1px solid #795548; padding: 10px; display: flex; justify-content: space-between; align-items: center;";
-            itemDiv.innerHTML = `
-                <span><strong>[${item.categoria.toUpperCase()}]</strong> ${item.nombre}</span>
-                <button onclick="eliminarRecurso('${item.id}')" class="btn-eliminar">Borrar</button>
-            `;
+            itemDiv.style = "border-bottom: 1px solid #795548; padding: 10px; display: flex; justify-content: space-between;";
+            itemDiv.innerHTML = `<span>[${item.categoria}] ${item.nombre}</span>
+                                 <button onclick="eliminarRecurso('${item.id}')">Borrar</button>`;
             lista.appendChild(itemDiv);
         });
     }
 }
 
 async function eliminarRecurso(id) {
-    if (confirm("¿Seguro que quieres borrar este recurso?")) {
+    if (confirm("¿Borrar recurso?")) {
         await supabaseClient.from('recursos').delete().eq('id', id);
         location.reload();
     }
 }
 
-// INICIALIZACIÓN
+async function verificarAdmin() {
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+        const user = session?.user;
+        if (user && user.email === "fabianjensi@gmail.com") {
+            const adminCard = document.getElementById('admin-card');
+            if (adminCard) adminCard.style.display = "block";
+        }
+    });
+}
+
 window.onload = () => {
     const climaGuardado = localStorage.getItem('pref-clima');
     if (climaGuardado) aplicarClima(climaGuardado);
