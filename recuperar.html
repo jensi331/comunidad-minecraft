@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nueva Contraseña - Minecraft Community</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="home-body">
+
+    <div class="login-container">
+        <h1>Actualizar Contraseña</h1>
+        <p>Escribe tu nueva clave de acceso</p>
+        
+        <form id="form-update-password">
+            <div class="input-group">
+                <label for="new-password">Nueva Contraseña</label>
+                <input type="password" id="new-password" placeholder="Mínimo 6 caracteres" required>
+            </div>
+
+            <button type="submit" class="btn-login">Guardar Cambios</button>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+</body>
+</html>

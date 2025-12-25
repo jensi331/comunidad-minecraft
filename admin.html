@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Master - Minecraft Community</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="home-body">
+
+    <div class="home-container" style="max-width: 600px;">
+        <a href="home.html" style="color: #52a535; text-decoration: none; float: left; font-weight: bold;">⬅ Volver al Inicio</a>
+        <br>
+        <h1>👑 Panel de Control Master</h1>
+        
+        <hr style="border: 1px solid var(--mc-dirt); margin: 20px 0;">
+
+        <div class="input-group">
+            <label>Nombre del Recurso:</label>
+            <input type="text" id="nombre" placeholder="Ej: Lucky Blocks Mod">
+        </div>
+
+        <div class="input-group">
+            <label>Descripción:</label>
+            <input type="text" id="descripcion" placeholder="Corta descripción del contenido">
+        </div>
+
+        <div class="input-group">
+            <label>Subir Imagen desde PC (Recomendado):</label>
+            <input type="file" id="archivo-imagen" accept="image/*" style="background: #ddd; border: 2px dashed #555;">
+        </div>
+
+        <div class="input-group">
+            <label>O pegar URL de imagen externa:</label>
+            <input type="text" id="imagen-url" placeholder="http://imagen.com/foto.jpg">
+        </div>
+
+        <div class="input-group">
+            <label>Link de Descarga del Addon/Shader:</label>
+            <input type="text" id="descarga" placeholder="Mediafire, Mega, etc.">
+        </div>
+
+        <div class="input-group">
+            <label>Categoría:</label>
+            <select id="categoria" style="width: 100%; padding: 12px; border: 2px solid #555; background: #eee;">
+                <option value="addons">📦 Addon</option>
+                <option value="texturas">🎨 Textura</option>
+                <option value="shaders">🌈 Shader</option>
+            </select>
+        </div>
+
+        <button class="btn-login" onclick="subirRecurso()" style="margin-top: 20px;">🚀 Publicar en la Web</button>
+
+        <hr style="border: 1px solid var(--mc-dirt); margin: 40px 0;">
+
+        <h3>🗑️ Gestionar Recursos</h3>
+        <div id="lista-gestion">
+            <p>Cargando recursos...</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+</body>
+</html>

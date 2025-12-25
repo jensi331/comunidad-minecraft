@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft Community - Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="home-body">
+
+    <button id="theme-toggle" class="theme-btn">☀️ Cambiar Clima</button>
+
+    <div class="login-container">
+        <h1>¡Bienvenido!</h1>
+        <p>Inicia sesión para entrar al mundo</p>
+
+        <form id="login-form">
+            <div class="input-group">
+                <label for="email">Correo Electrónico</label>
+                <input type="email" id="email" placeholder="steve@minecraft.net" required>
+            </div>
+
+            <div class="input-group">
+                <label for="password">Contraseña</label>
+                <input type="password" id="password" placeholder="********" required>
+            </div>
+
+            <button type="submit" class="btn-login">Entrar al Mundo</button>
+        </form>
+        
+        <p class="footer-text">¿No tienes cuenta? <a href="registro.html">Regístrate aquí</a></p>
+        <p class="footer-text">
+            <a href="#" onclick="recuperarContrasena()" style="font-size: 0.8em; opacity: 0.8;">¿Olvidaste tu contraseña?</a>
+        </p>
+
+        <a href="https://chat.whatsapp.com/C4uVksqzOJh5BL1MwvcnfL" target="_blank" class="soporte-link">
+            💬 Soporte Técnico (WhatsApp)
+        </a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+</body>
+</html>

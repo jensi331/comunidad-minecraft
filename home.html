@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recursos - Minecraft Community</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="home-body">
+
+    <button id="theme-toggle" class="theme-btn">☀️ Cambiar Clima</button>
+
+    <div class="home-container">
+        <h1>Explorador de Recursos</h1>
+        <p>¿Qué quieres descargar hoy?</p>
+
+        <div class="grid-recursos">
+            <a href="addons.html" style="text-decoration: none; color: inherit;">
+                <div class="card">
+                    <h2>📦</h2>
+                    <h3>Complementos</h3>
+                    <p>Mods y Add-ons exclusivos.</p>
+                </div>
+            </a>
+
+            <a href="texturas.html" style="text-decoration: none; color: inherit;">
+                <div class="card">
+                    <h2>🎨</h2>
+                    <h3>Texturas</h3>
+                    <p>Pack de recursos HD.</p>
+                </div>
+            </a>
+
+            <a href="shaders.html" style="text-decoration: none; color: inherit;">
+                <div class="card">
+                    <h2>🌈</h2>
+                    <h3>Shaders</h3>
+                    <p>Mejora los gráficos.</p>
+                </div>
+            </a>
+
+            <a href="https://chat.whatsapp.com/C4uVksqzOJh5BL1MwvcnfL" target="_blank" style="text-decoration: none; color: inherit;">
+                <div class="card card-whatsapp">
+                    <h2>💬</h2>
+                    <h3>Soporte</h3>
+                    <p>Ayuda por WhatsApp.</p>
+                </div>
+            </a>
+
+            <div id="admin-card" class="card card-admin" onclick="window.location.href='admin.html'" style="display: none; cursor: pointer;">
+                <h2>👑</h2>
+                <h3>Panel Master</h3>
+                <p>Gestionar la comunidad.</p>
+            </div>
+        </div>
+
+        <button id="btn-logout" class="btn-cerrar">Cerrar Sesión</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+</body>
+</html>
