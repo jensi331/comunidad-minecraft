@@ -3,8 +3,17 @@ const SUPABASE_URL = 'https://qiaekarmrjroahcgfuks.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFpYWVrYXJtcmpyb2FoY2dmdWtzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY2MDM5NjIsImV4cCI6MjA4MjE3OTk2Mn0.7_VQXlXcrHW20mqpVQE7V8jIPyhDh8Rj1FDUmsUvq68';
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+// --- NUEVA LÓGICA DE PERSISTENCIA ---
+// Si el usuario ya está logueado y está en el index, mandarlo al home automáticamente
+if (window.location.pathname.includes('index.html') || window.location.pathname.endsWith('/')) {
+    if (localStorage.getItem('mc_session_active') === 'true') {
+        window.location.href = "home.html";
+    }
+}
+
 function cerrarDetalle() {
-    document.getElementById('modal-recurso').style.display = 'none';
+    const modal = document.getElementById('modal-recurso');
+    if (modal) modal.style.display = 'none';
 }
 
 // 2. LÓGICA DEL BOTÓN DE CLIMA (Día/Noche con Memoria)
@@ -29,7 +38,7 @@ if (btnTheme) {
     });
 }
 
-// 3. LÓGICA DE AUTENTICACIÓN (Login, Registro, Recuperación)
+// 3. LÓGICA DE AUTENTICACIÓN
 const loginForm = document.getElementById('login-form');
 if (loginForm) {
     loginForm.addEventListener('submit', async (e) => {
@@ -45,13 +54,15 @@ if (loginForm) {
         if (error) {
             alert("¡Error de acceso!: " + error.message);
         } else {
+            // GUARDAR SESIÓN PARA RECUERDO
+            localStorage.setItem('mc_session_active', 'true');
             alert("¡Conexión establecida! Entrando al mundo...");
             window.location.href = "./home.html";
         }
     });
 }
 
-// Función para registrar nuevos usuarios (Compatible con registro.html)
+// Función para registrar nuevos usuarios
 async function registrarUsuario(e) {
     e.preventDefault();
     const email = document.getElementById('reg-email').value;
@@ -70,21 +81,8 @@ async function registrarUsuario(e) {
     if (error) {
         alert("Error al registrar: " + error.message);
     } else {
-        alert("✅ ¡Registro enviado! Revisa tu correo para confirmar tu cuenta antes de iniciar sesión.");
+        alert("✅ ¡Registro enviado! Revisa tu correo para confirmar tu cuenta.");
         window.location.href = "index.html"; 
-    }
-}
-
-// Función para recuperar contraseña
-async function recuperarContrasena() {
-    const email = prompt("Introduce tu correo electrónico para recibir el enlace de restauración:");
-    if (email) {
-        const { data, error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-            redirectTo: window.location.origin + '/index.html',
-        });
-
-        if (error) alert("Error: " + error.message);
-        else alert("📩 Enlace de recuperación enviado a tu correo.");
     }
 }
 
@@ -93,6 +91,8 @@ const logoutBtn = document.getElementById('btn-logout');
 if (logoutBtn) {
     logoutBtn.addEventListener('click', async () => {
         await supabaseClient.auth.signOut();
+        // BORRAR SESIÓN AL SALIR
+        localStorage.removeItem('mc_session_active');
         window.location.href = "./index.html";
     });
 }
@@ -107,11 +107,6 @@ function abrirDetalle(nombre, desc, img, link) {
         document.getElementById('modal-download').href = link;
         modal.style.display = 'flex';
     }
-}
-
-function cerrarDetalle() {
-    const modal = document.getElementById('modal-recurso');
-    if (modal) modal.style.display = 'none';
 }
 
 window.onclick = function(event) {
@@ -131,7 +126,7 @@ async function verificarAdmin() {
     });
 }
 
-// 7. LÓGICA DEL PANEL MASTER (Subida de Archivos)
+// 7. LÓGICA DEL PANEL MASTER
 async function subirRecurso() {
     const nombre = document.getElementById('nombre').value;
     const descripcion = document.getElementById('descripcion').value;
@@ -224,7 +219,7 @@ async function cargarListaGestion() {
     if(recursos) {
         recursos.forEach(item => {
             const itemDiv = document.createElement('div');
-            itemDiv.className = "admin-item-row"; // Puedes darle estilo en CSS
+            itemDiv.className = "admin-item-row";
             itemDiv.style = "border-bottom: 1px solid #795548; padding: 10px; display: flex; justify-content: space-between; align-items: center;";
             itemDiv.innerHTML = `
                 <span><strong>[${item.categoria.toUpperCase()}]</strong> ${item.nombre}</span>
@@ -257,39 +252,14 @@ window.onload = () => {
     if (document.getElementById('lista-gestion')) cargarListaGestion();
 };
 
-// --- RECUPERACIÓN DE CONTRASEÑA ---
-
-// 1. Envío del correo (Se activa desde el enlace en index.html)
+// RECUPERACIÓN DE CONTRASEÑA
 async function recuperarContrasena() {
-    const email = prompt("Introduce tu correo electrónico para recibir el enlace de restauración:");
+    const email = prompt("Introduce tu correo electrónico:");
     if (email) {
         const { data, error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-            // Esta URL la cambiaremos cuando publiques la página
             redirectTo: window.location.origin + '/recuperar.html', 
         });
-
         if (error) alert("Error: " + error.message);
-        else alert("📩 Enlace de recuperación enviado. Revisa tu correo.");
+        else alert("📩 Enlace enviado a tu correo.");
     }
-}
-
-// 2. Acción de guardar la nueva contraseña (En recuperar.html)
-const updatePasswordForm = document.getElementById('form-update-password');
-if (updatePasswordForm) {
-    updatePasswordForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const newPassword = document.getElementById('new-password').value;
-
-        const { data, error } = await supabaseClient.auth.updateUser({
-            password: newPassword
-        });
-
-        if (error) {
-            alert("Error al actualizar: " + error.message);
-        } else {
-            alert("✅ ¡Contraseña actualizada! Ya puedes entrar con tu nueva clave.");
-            window.location.href = "index.html";
-        }
-    });
-
 }
