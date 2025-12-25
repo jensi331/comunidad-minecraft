@@ -11,23 +11,25 @@
     <button id="theme-toggle" class="theme-btn">☀️ Cambiar Clima</button>
 
     <div class="home-container">
-        <a href="home.html" style="color: #52a535; text-decoration: none; float: left; font-weight: bold;">⬅ Volver</a>
-        <br>
-        <h1>🎨 Packs de Texturas</h1>
+        <a href="home.html" style="color: #52a535; text-decoration: none; float: left; font-weight: bold; margin-bottom: 20px; display: block;">⬅ Volver al Inicio</a>
         
-        <div class="grid-recursos">
-            <div class="card-item" onclick="abrirDetalle('Faithful 64x', 'Las texturas de siempre con mayor resolución.', 'https://via.placeholder.com/300x150', '#')">
-            </div>
+        <div style="clear: both;"></div>
+        
+        <h1>🎨 Packs de Texturas</h1>
+        <p style="text-align: center; color: #795548;">Personaliza el aspecto de tu mundo con los mejores recursos.</p>
+        
+        <div class="grid-recursos" id="grid-texturas">
+            <p>Cargando texturas desde la base de datos...</p>
         </div>
     </div>
 
     <div id="modal-recurso" class="modal-overlay">
         <div class="modal-content">
             <span class="close-btn" onclick="cerrarDetalle()">&times;</span>
-            <img id="modal-img" src="">
+            <img id="modal-img" src="" alt="Vista previa">
             <h2 id="modal-titulo"></h2>
             <p id="modal-desc"></p>
-            <a id="modal-download" href="#" class="btn-descarga-modal">⬇ Descargar</a>
+            <a id="modal-download" href="#" target="_blank" class="btn-descarga-modal">⬇ Descargar Ahora</a>
         </div>
     </div>
 
