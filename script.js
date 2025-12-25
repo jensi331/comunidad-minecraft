@@ -3,6 +3,10 @@ const SUPABASE_URL = 'https://qiaekarmrjroahcgfuks.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFpYWVrYXJtcmpyb2FoY2dmdWtzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY2MDM5NjIsImV4cCI6MjA4MjE3OTk2Mn0.7_VQXlXcrHW20mqpVQE7V8jIPyhDh8Rj1FDUmsUvq68';
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+function cerrarDetalle() {
+    document.getElementById('modal-recurso').style.display = 'none';
+}
+
 // 2. LÓGICA DEL BOTÓN DE CLIMA (Día/Noche con Memoria)
 const btnTheme = document.getElementById('theme-toggle');
 
@@ -287,4 +291,5 @@ if (updatePasswordForm) {
             window.location.href = "index.html";
         }
     });
+
 }
