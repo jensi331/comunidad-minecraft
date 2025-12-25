@@ -3,20 +3,41 @@ const SUPABASE_URL = 'https://qiaekarmrjroahcgfuks.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFpYWVrYXJtcmpyb2FoY2dmdWtzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY2MDM5NjIsImV4cCI6MjA4MjE3OTk2Mn0.7_VQXlXcrHW20mqpVQE7V8jIPyhDh8Rj1FDUmsUvq68';
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// --- NUEVA LÓGICA DE PERSISTENCIA ---
-// Si el usuario ya está logueado y está en el index, mandarlo al home automáticamente
-if (window.location.pathname.includes('index.html') || window.location.pathname.endsWith('/')) {
-    if (localStorage.getItem('mc_session_active') === 'true') {
+// --- LÓGICA DE REDIRECCIÓN AUTOMÁTICA ---
+(function gestionarRutas() {
+    const path = window.location.pathname;
+    const sesionActiva = localStorage.getItem('mc_session_active');
+
+    // Identificar si estamos en el Login (Raíz o index.html)
+    const esLogin = path.endsWith('/comunidad-minecraft/') || 
+                    path.endsWith('/index.html') || 
+                    path.endsWith('/comunidad-minecraft');
+
+    // Identificar si estamos en el Home o páginas de recursos
+    const esPaginaProtegida = path.includes('home.html') || 
+                              path.includes('addons.html') || 
+                              path.includes('texturas.html') || 
+                              path.includes('shaders.html') ||
+                              path.includes('admin.html');
+
+    // CASO 1: Ya estoy registrado y entro al link principal -> Al Home
+    if (esLogin && sesionActiva === 'true') {
         window.location.href = "home.html";
     }
-}
 
+    // CASO 2: NO estoy registrado e intento entrar al Home -> Al Login
+    if (esPaginaProtegida && sesionActiva !== 'true') {
+        window.location.href = "index.html";
+    }
+})();
+
+// --- FUNCIONES GENERALES ---
 function cerrarDetalle() {
     const modal = document.getElementById('modal-recurso');
     if (modal) modal.style.display = 'none';
 }
 
-// 2. LÓGICA DEL BOTÓN DE CLIMA (Día/Noche con Memoria)
+// 2. LÓGICA DEL BOTÓN DE CLIMA
 const btnTheme = document.getElementById('theme-toggle');
 
 function aplicarClima(tema) {
@@ -54,10 +75,10 @@ if (loginForm) {
         if (error) {
             alert("¡Error de acceso!: " + error.message);
         } else {
-            // GUARDAR SESIÓN PARA RECUERDO
+            // Guardamos que la sesión está activa
             localStorage.setItem('mc_session_active', 'true');
             alert("¡Conexión establecida! Entrando al mundo...");
-            window.location.href = "./home.html";
+            window.location.href = "home.html";
         }
     });
 }
@@ -81,7 +102,7 @@ async function registrarUsuario(e) {
     if (error) {
         alert("Error al registrar: " + error.message);
     } else {
-        alert("✅ ¡Registro enviado! Revisa tu correo para confirmar tu cuenta.");
+        alert("✅ ¡Registro enviado! Revisa tu correo para confirmar.");
         window.location.href = "index.html"; 
     }
 }
@@ -91,9 +112,9 @@ const logoutBtn = document.getElementById('btn-logout');
 if (logoutBtn) {
     logoutBtn.addEventListener('click', async () => {
         await supabaseClient.auth.signOut();
-        // BORRAR SESIÓN AL SALIR
+        // Borramos el rastro de la sesión
         localStorage.removeItem('mc_session_active');
-        window.location.href = "./index.html";
+        window.location.href = "index.html";
     });
 }
 
@@ -126,7 +147,7 @@ async function verificarAdmin() {
     });
 }
 
-// 7. LÓGICA DEL PANEL MASTER
+// 7. LÓGICA DEL PANEL MASTER (Subir Recursos)
 async function subirRecurso() {
     const nombre = document.getElementById('nombre').value;
     const descripcion = document.getElementById('descripcion').value;
@@ -173,12 +194,12 @@ async function subirRecurso() {
     if (dbError) {
         alert("Error en DB: " + dbError.message);
     } else {
-        alert("✅ ¡Recurso publicado con éxito!");
+        alert("✅ ¡Recurso publicado!");
         window.location.href = "home.html";
     }
 }
 
-// 8. CARGAR RECURSOS AUTOMÁTICAMENTE
+// 8. CARGAR RECURSOS POR CATEGORÍA
 async function cargarRecursos(cat) {
     const { data: recursos, error } = await supabaseClient
         .from('recursos')
@@ -241,9 +262,7 @@ async function eliminarRecurso(id) {
 // INICIALIZACIÓN POR PÁGINA
 window.onload = () => {
     const climaGuardado = localStorage.getItem('pref-clima');
-    if (climaGuardado) {
-        aplicarClima(climaGuardado);
-    }
+    if (climaGuardado) aplicarClima(climaGuardado);
 
     verificarAdmin();
     if (document.getElementById('grid-addons')) cargarRecursos('addons');
@@ -257,7 +276,7 @@ async function recuperarContrasena() {
     const email = prompt("Introduce tu correo electrónico:");
     if (email) {
         const { data, error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-            redirectTo: window.location.origin + '/recuperar.html', 
+            redirectTo: window.location.origin + '/comunidad-minecraft/recuperar.html', 
         });
         if (error) alert("Error: " + error.message);
         else alert("📩 Enlace enviado a tu correo.");
