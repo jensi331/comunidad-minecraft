@@ -203,55 +203,75 @@ input {
 
 }
 
-/* --- SCROLL PARA EL TEXTO DE LAS TARJETAS --- */
-.card p, .card-item p {
-    max-height: 80px; /* Limita la altura del texto */
-    overflow-y: auto; /* Activa el scroll si el texto es largo */
-    padding-right: 5px;
-    font-size: 0.9rem;
+/* --- SCROLL PARA EL CONTENEDOR DE ADDONS --- */
+.home-container {
+    max-height: 90vh; /* Evita que el cuadro sea más alto que la pantalla */
+    display: flex;
+    flex-direction: column;
 }
 
-/* Personalización de la barra de scroll (Estilo Madera/Minecraft) */
-.card p::-webkit-scrollbar, 
-.card-item p::-webkit-scrollbar,
-.modal-content p::-webkit-scrollbar {
-    width: 6px;
+.grid-recursos {
+    overflow-y: auto; /* Permite scroll si hay muchos addons */
+    padding-right: 10px;
+    flex-grow: 1;
 }
 
-.card p::-webkit-scrollbar-thumb,
-.card-item p::-webkit-scrollbar-thumb {
+/* --- ESTILO DE LAS BARRAS DE SCROLL (TIPO MADERA) --- */
+.grid-recursos::-webkit-scrollbar, 
+#modal-desc::-webkit-scrollbar {
+    width: 8px;
+}
+
+.grid-recursos::-webkit-scrollbar-thumb, 
+#modal-desc::-webkit-scrollbar-thumb {
     background: var(--mc-dirt);
-    border-radius: 10px;
+    border: 2px solid #333;
+    border-radius: 4px;
 }
 
-/* --- LA "X" LINDA PARA EL MODAL --- */
+/* --- LA "X" LINDA PARA CERRAR --- */
+.modal-content {
+    position: relative; /* Necesario para que la X se ubique bien */
+}
+
 .close-btn {
     position: absolute;
     top: -15px;
     right: -15px;
     width: 35px;
     height: 35px;
-    background-color: #e74c3c; /* Rojo Minecraft */
+    background-color: #e74c3c; /* Rojo */
     color: white;
     border: 3px solid #333;
-    border-radius: 5px; /* Un poco cuadrada para que parezca botón de juego */
+    border-radius: 4px;
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
     font-weight: bold;
-    font-size: 20px;
+    font-size: 24px;
     box-shadow: 0 4px 0 #c0392b; /* Efecto 3D */
+    z-index: 100;
     transition: 0.1s;
-    z-index: 10;
+    line-height: 1;
 }
 
 .close-btn:hover {
-    transform: scale(1.1);
     filter: brightness(1.2);
+    transform: scale(1.1);
 }
 
 .close-btn:active {
     transform: translateY(2px);
     box-shadow: 0 2px 0 #c0392b;
+}
+
+/* --- SCROLL PARA LA DESCRIPCIÓN DEL MODAL --- */
+#modal-desc {
+    max-height: 120px; /* Límite de altura para el texto */
+    overflow-y: auto;
+    margin: 15px 0;
+    padding-right: 5px;
+    text-align: left;
+    font-size: 0.95rem;
 }
